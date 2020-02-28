@@ -19,6 +19,13 @@ class MultiSelectFormField extends FormField<dynamic> {
   final Widget trailing;
   final String okButtonLabel;
   final String cancelButtonLabel;
+  final InputBorder inputBorder;
+  final Icon prefixIcon;
+  final Icon suffixIcon;
+  final Color chipBgColor;
+  final Color chipTextColor;
+  final bool colorFilled;
+  final Color fillColor;
 
   MultiSelectFormField(
       {FormFieldSetter<dynamic> onSaved,
@@ -37,9 +44,17 @@ class MultiSelectFormField extends FormField<dynamic> {
       this.change,
       this.open,
       this.close,
+      this.prefixIcon,
+      this.suffixIcon,
+      this.chipBgColor,
+      this.chipTextColor,
+      this.fillColor,
+      this.colorFilled = true,
       this.okButtonLabel = 'OK',
       this.cancelButtonLabel = 'CANCEL',
-      this.trailing})
+      this.trailing,
+      this.inputBorder = const UnderlineInputBorder(),
+      })
       : super(
           onSaved: onSaved,
           validator: validator,
@@ -53,7 +68,14 @@ class MultiSelectFormField extends FormField<dynamic> {
                 values.forEach((item) {
                   var existingItem = dataSource.singleWhere((itm) => itm[valueField] == item, orElse: () => null);
                   selectedOptions.add(Chip(
-                    label: Text(existingItem[textField], overflow: TextOverflow.ellipsis),
+                    backgroundColor: chipBgColor,
+                    label: Text(
+                      existingItem[textField],
+                      overflow: TextOverflow.ellipsis,
+                      style: TextStyle(
+                        color: chipTextColor
+                      ),
+                    ),
                   ));
                 });
               }
@@ -93,9 +115,13 @@ class MultiSelectFormField extends FormField<dynamic> {
               },
               child: InputDecorator(
                 decoration: InputDecoration(
-                  filled: true,
+                  filled: colorFilled,
+                  fillColor: fillColor,
                   errorText: state.hasError ? state.errorText : null,
                   errorMaxLines: 4,
+                  prefixIcon: prefixIcon,
+                  suffixIcon: suffixIcon,
+                  border: inputBorder,
                 ),
                 isEmpty: state.value == null || state.value == '',
                 child: Column(
@@ -109,7 +135,10 @@ class MultiSelectFormField extends FormField<dynamic> {
                           Expanded(
                               child: Text(
                             titleText,
-                            style: TextStyle(fontSize: 13.0, color: Colors.black54),
+                            style: TextStyle(
+                              fontSize: 13.0,
+                              color: Colors.black54
+                            ),
                           )),
                           required
                               ? Padding(padding:EdgeInsets.only(top:5, right: 5), child: Text(
@@ -124,31 +153,33 @@ class MultiSelectFormField extends FormField<dynamic> {
                           Icon(
                             Icons.arrow_drop_down,
                             color: Colors.black87,
-                            size: 25.0,                            
+                            size: 25.0,
                           ),
                         ],
                       ),
                     ),
                     value != null && value.length > 0
-                        ? Wrap(
-                            spacing: 8.0,
-                            runSpacing: 0.0,
-                            children: _buildSelectedOptions(value, state),
-                          )
-                        : new Container(
-                            padding: EdgeInsets.only(top: 4),
-                            child: Text(
-                              hintText,
-                              style: TextStyle(
-                                fontSize: 16,
-                                color: Colors.grey.shade500,
-                              ),
+                      ? Wrap(
+                          spacing: 8.0,
+                          runSpacing: 0.0,
+                          children: _buildSelectedOptions(value, state),
+                        )
+                      : Container(
+                          padding: EdgeInsets.only(top: 4),
+                          child: Text(
+                            hintText,
+                            style: TextStyle(
+                              fontSize: 16,
+                              color: Colors.grey[500],
                             ),
-                          )
+                          ),
+                        )
                   ],
                 ),
-              ),
+              )
+            
             );
+
           },
         );
 }
